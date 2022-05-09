@@ -44,3 +44,23 @@ def main():
 if __name__ == '__main__':
     main()
 
+""" t_final=30
+fig = plt.figure()
+axis = plt.axes(xlim=(-1,t_final), ylim=(-1,t_final))
+
+line,=axis.plot([],[])
+
+def initial1():
+    line.set_data([],[])
+    return line,
+
+def animate(i):
+    x=np.linspace(0,t_final,1000)
+
+    y=x[i]
+    line.set_data(x,y)
+
+    return line,
+
+anim= mtA.FuncAnimation(fig, animate,init_func=initial1, frames=2,interval=20,blit=True)
+plt.show()"""
