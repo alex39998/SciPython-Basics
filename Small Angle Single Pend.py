@@ -5,15 +5,15 @@ import numpy as np
 #For a simple pendulumn: theta = theta_0 * cos (sqrt(g/L)t) | W=sqrt(g/L)
 
 #Pendulumn initial condiiton in radians
-theta_i=0.4
+theta_i=0.2
 length=5
 x0=length*np.sin(theta_i)
 y0=length*np.cos(theta_i)
 
 #Problem setup
-nsteps = 100000
+nsteps = 20000
 t_init = 0.0
-t_final = 500.0
+t_final = 200.0
 t = np.linspace(t_init, t_final, nsteps)
 timeStep= t[1]-t[0]
 theta=xA=yA=xN=yN=np.empty(nsteps,dtype=float)
@@ -39,6 +39,18 @@ def EulerSys ():
         h[1,index]=h1Prev - h0Prev*timeStep*C
     return h
 
+def velocity_Verlet ():
+    i=h
+    for index in range(1,nsteps):
+        h0Prev=i[0,index-1]
+        h1Prev=i[1,index-1]
+        vh= h1Prev - 0.5*C*np.sin(h0Prev)*timeStep
+        #position
+        i[0,index]=h0Prev + vh*timeStep
+        #vel
+        i[1,index]=vh - 0.5*C*np.sin(i[0,index])*timeStep*C
+    return i
+
 def thetaNToX(i):
     i = np.sin(h[0,:])*length
     return i
@@ -60,8 +72,8 @@ def main ():
     ax.set_ylim([0,15])
 
     anchor=[0,10]
-    pendBall,=plt.plot(0,10-length,'bo',markersize=20)
-    pendBallNum,=plt.plot(0,10-length,'ro',markersize=20,alpha=0.5)
+    pendBall,=plt.plot(0,10-length,'bo',markersize=18, label='Analytical')
+    pendBallNum,=plt.plot(0,10-length,'ro',markersize=18,alpha=0.5,label='Numerical')
     line,=plt.plot([anchor[0],0],[anchor[1],5],'b')
     lineNum,=plt.plot([anchor[0],0],[anchor[1],5],'r',alpha=0.5)
     xA[0]=x0
@@ -74,7 +86,8 @@ def main ():
     yY = thetaToY(yA)
 
     #Numerical
-    EulerSys()
+    #EulerSys()
+    velocity_Verlet()
     xnum = thetaNToX(xN)
     ynum = thetaNToY(yN)
 
@@ -88,8 +101,9 @@ def main ():
         lineNum.set_data([anchor[0],xnum[i]],[anchor[1],ynum[i]])
         return pendBall,line,pendBallNum,lineNum
 
-    ani=mtA.FuncAnimation(fig,animate,interval=1,blit=True)
-    #ani.save('alex\'s thing.gif')
+    ani=mtA.FuncAnimation(fig,animate,interval=0.1,blit=True)
+    leg=ax.legend()
+    #ani.save('Single Pendulumn Small Angle.gif')
     plt.show()
 
 
